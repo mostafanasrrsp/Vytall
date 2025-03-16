@@ -1,4 +1,4 @@
-import Sidebar from './Sidebar';
+import Sidebar from './sidebar';
 import Header from './Header';
 
 export default function MainLayout({ children, title }) {

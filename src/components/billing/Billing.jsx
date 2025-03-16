@@ -1,4 +1,4 @@
-// src/components/billing/Billing.js
+// src/components/billing/Billing.jsx
 import React from 'react';
 
 export default function Billing() {

@@ -1,7 +1,7 @@
 // src/components/appointments/Appointments.jsx
 import { useEffect, useState } from 'react';
-import AppointmentCard from '../ui/AppointmentCard';
-import fetchAppointments from '../../api/appointments';
+import AppointmentCard from './AppointmentCard';
+import { fetchAppointments } from '../../api/appointments';
 
 export default function Appointments() {
   const [appointments, setAppointments] = useState([]);
