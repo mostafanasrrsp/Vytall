@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import Select from 'react-select';
 import { fetchMedicalFacilities, addMedicalFacility, updateMedicalFacility, deleteMedicalFacility } from '../../api/medicalFacilities';
 import Button from '../ui/Button';
+
+// Define the options for facility types
+const facilityTypes = [
+  { value: 'Clinic', label: 'Clinic' },
+  { value: 'Hospital', label: 'Hospital' },
+];
 
 export default function MedicalFacilitiesManager() {
   const [facilities, setFacilities] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
-    type: '',
+    type: '', // Will store "Clinic" or "Hospital"
     address: '',
     email: '',
     phone: '',
@@ -83,7 +90,9 @@ export default function MedicalFacilitiesManager() {
 
   return (
     <div className="p-4 w-full flex flex-col gap-6">
-      <h2 className="text-2xl font-bold mb-4">{editingId ? 'Edit Medical Facility' : 'Add Medical Facility'}</h2>
+      <h2 className="text-2xl font-bold mb-4">
+        {editingId ? 'Edit Medical Facility' : 'Add Medical Facility'}
+      </h2>
 
       {/* FORM */}
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-lg w-full">
@@ -95,14 +104,22 @@ export default function MedicalFacilitiesManager() {
           className="w-full p-2 border rounded"
           required
         />
-        <input
-          type="text"
-          placeholder="Type (Clinic or Hospital)"
-          value={formData.type}
-          onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-          className="w-full p-2 border rounded"
-          required
+
+        {/* Replace plain text input with react-select for Facility Type */}
+        <Select
+          options={facilityTypes}
+          placeholder="Select Facility Type"
+          value={facilityTypes.find(option => option.value === formData.type) || null}
+          onChange={(selectedOption) => setFormData({ ...formData, type: selectedOption ? selectedOption.value : '' })}
+          className="w-full"
+          styles={{
+            control: (provided) => ({
+              ...provided,
+              borderColor: '#d1d5db', // Tailwind gray-300
+            }),
+          }}
         />
+
         <input
           type="text"
           placeholder="Address"

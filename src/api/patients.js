@@ -1,26 +1,73 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://localhost:5227/api';
+const API_BASE_URL = 'https://localhost:5227/api/patients';
 
-// Fetch all patients
+// ✅ Helper to get JWT token
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('jwtToken');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+// ✅ Fetch all patients (Admins & Physicians)
 export const fetchPatients = async () => {
-  const response = await axios.get(`${API_BASE_URL}/patients`);
-  return response.data;
+  try {
+    const response = await axios.get(API_BASE_URL, { headers: getAuthHeaders() });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch patients', error);
+    throw error;
+  }
 };
 
-// Add a patient
+// ✅ Fetch single patient (Admins & Physicians)
+export const fetchPatientById = async (id) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/${id}`, { headers: getAuthHeaders() });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch patient', error);
+    throw error;
+  }
+};
+
+// ✅ Add new patient (Admins Only)
 export const addPatient = async (patientData) => {
-  const response = await axios.post(`${API_BASE_URL}/patients`, patientData);
-  return response.data;
+  try {
+    const response = await axios.post(API_BASE_URL, patientData, {
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to add patient', error);
+    throw error;
+  }
 };
 
-// Update a patient
+// ✅ Update patient (Admins Only)
 export const updatePatient = async (id, patientData) => {
-  const response = await axios.put(`${API_BASE_URL}/patients/${id}`, patientData);
-  return response.data;
+  try {
+    const response = await axios.put(`${API_BASE_URL}/${id}`, patientData, {
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to update patient', error);
+    throw error;
+  }
 };
 
-// Delete a patient
+// ❌ Delete patient (Admins Only)
 export const deletePatient = async (id) => {
-  await axios.delete(`${API_BASE_URL}/patients/${id}`);
+  try {
+    await axios.delete(`${API_BASE_URL}/${id}`, { headers: getAuthHeaders() });
+  } catch (error) {
+    console.error('Failed to delete patient', error);
+    throw error;
+  }
 };

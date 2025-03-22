@@ -1,22 +1,25 @@
-// src/components/prescriptions/Prescriptions.jsx
 import { useEffect, useState } from 'react';
+import { fetchPrescriptionReminders } from '../../api/prescriptions';
 import PrescriptionCard from './PrescriptionCard';
-import { fetchPrescriptions } from '../../api/prescriptions';
+import { useAuth } from '../../login/AuthContext'; // ✅ Import AuthContext
 
 export default function Prescriptions() {
+  const { user } = useAuth(); // ✅ Get logged-in user
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchPrescriptions()
-      .then(data => setPrescriptions(data))
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+    if (!user?.patientId) return; // ✅ Skip if no patientId
 
-  if (loading) return <div>Loading prescriptions...</div>;
-  if (error) return <div>Error: {error}</div>;
+    fetchPrescriptionReminders(user.patientId)
+      .then((data) => setPrescriptions(data))
+      .catch((err) => setError(err.message || "Failed to load prescriptions."))
+      .finally(() => setLoading(false));
+  }, [user?.patientId]);
+
+  if (loading) return <div className="p-4">Loading prescriptions...</div>;
+  if (error) return <div className="p-4 text-red-500">Error: {error}</div>;
 
   return (
     <div className="space-y-4 p-4">
@@ -24,7 +27,10 @@ export default function Prescriptions() {
         <p className="text-gray-500">No prescriptions found.</p>
       ) : (
         prescriptions.map((prescription) => (
-          <PrescriptionCard key={prescription.prescriptionId} prescription={prescription} />
+          <PrescriptionCard
+            key={prescription.prescriptionId}
+            prescription={prescription}
+          />
         ))
       )}
     </div>

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import Select from 'react-select';
 import { fetchPhysicians, addPhysician, updatePhysician, deletePhysician } from '../../api/physicians';
 import Button from '../ui/Button';
+import specializations from '../../Data/specializations';
 
 export default function PhysiciansManager() {
   const [physicians, setPhysicians] = useState([]);
@@ -55,18 +57,21 @@ export default function PhysiciansManager() {
   const handleEdit = (physician) => {
     console.log("Editing physician:", physician);
 
+    // Split name and contact details from the stored strings
     const [firstName, lastName] = (physician.name || '').split(' ');
     const [email, phone] = (physician.contact || '').split(' | ');
 
+    // Set form data, ensuring specialization is in the same format as the Select expects
     setFormData({
       firstName: firstName || '',
       lastName: lastName || '',
+      // Find the matching specialization option from our list
       specialization: physician.specialty || '',
       email: email || '',
       phone: phone || '',
     });
 
-    setEditingId(physician.id); // ✅ now it will be correctly set
+    setEditingId(physician.id); // now it will be correctly set
   };
 
   // Handle delete
@@ -110,14 +115,26 @@ export default function PhysiciansManager() {
           className="w-full p-2 border rounded"
           required
         />
-        <input
-          type="text"
-          placeholder="Specialization"
-          value={formData.specialization}
-          onChange={(e) => setFormData({ ...formData, specialization: e.target.value })}
-          className="w-full p-2 border rounded"
-          required
+
+        {/* Replace plain input with react-select for Specialization */}
+        <Select
+          options={specializations}
+          placeholder="Select Specialization"
+          value={
+            specializations.find(option => option.value === formData.specialization) || null
+          }
+          onChange={(option) =>
+            setFormData({ ...formData, specialization: option ? option.value : '' })
+          }
+          className="w-full"
+          styles={{
+            control: (provided) => ({
+              ...provided,
+              borderColor: '#d1d5db', // Tailwind gray-300
+            }),
+          }}
         />
+
         <input
           type="email"
           placeholder="Email"
@@ -149,15 +166,26 @@ export default function PhysiciansManager() {
       {/* LIST */}
       <div className="space-y-4 w-full">
         {physicians.map((physician, index) => (
-          <div key={index} className="p-4 border rounded flex justify-between items-center bg-white shadow-md">
+          <div
+            key={index}
+            className="p-4 border rounded flex justify-between items-center bg-white shadow-md"
+          >
             <div>
               <p className="font-semibold">{physician.name}</p>
-              <p><strong>Specialty:</strong> {physician.specialty}</p>
-              <p><strong>Contact:</strong> {physician.contact}</p>
+              <p>
+                <strong>Specialty:</strong> {physician.specialty}
+              </p>
+              <p>
+                <strong>Contact:</strong> {physician.contact}
+              </p>
             </div>
             <div className="flex space-x-2">
-              <Button onClick={() => handleEdit(physician)} variant="warning">Edit</Button>
-              <Button onClick={() => handleDelete(physician.id)} variant="danger">Delete</Button>
+              <Button onClick={() => handleEdit(physician)} variant="warning">
+                Edit
+              </Button>
+              <Button onClick={() => handleDelete(physician.id)} variant="danger">
+                Delete
+              </Button>
             </div>
           </div>
         ))}

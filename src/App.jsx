@@ -1,132 +1,83 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider, useAuth } from './login/AuthContext'; // ✅ Import both
+import './App.css'; // Make sure this is your Tailwind file
 
 // Layout
-import MainLayout from './components/layout/MainLayout.jsx';
+import MainLayout from './components/layout/MainLayout';
 
-// UI Components
-import Dashboard from './components/ui/dashboard.jsx';
+// Pages
+import Login from './login/Login';
+import Appointments from './components/appointments/Appointments';
+import Prescriptions from './components/prescriptions/Prescriptions';
+import MedicalRecords from './components/medicalRecords/MedicalRecords';
+import Billing from './components/billing/Billing';
+import Physicians from './components/physicians/physicians';
+import Pharmacists from './components/pharmacists/Pharmacists';
+import Diagnosis from './components/diagnosis/Diagnosis';
+import Dispensing from './components/Dispensing/Dispensing';
 
-// Core Components
-import Appointments from './components/appointments/Appointments.jsx';
-import Prescriptions from './components/prescriptions/Prescriptions.jsx';
-import MedicalRecords from './components/medicalRecords/MedicalRecords.jsx';
-import Billing from './components/billing/Billing.jsx';
-import Physicians from './components/physicians/physicians.jsx';
-import Pharmacists from './components/pharmacists/Pharmacists.jsx';
-import Diagnosis from './components/diagnosis/Diagnosis.jsx';
-import Dispensing from './components/Dispensing/Dispensing.jsx';
-import PharmacyManager from './components/Pharmacies/PharmacyManager.jsx';
-import PhysiciansManager from './components/physicians/PhysiciansManager.jsx';
-import PharmacistsManager from './components/Pharmacists/PharmacistsManager.jsx';
-import FacilitiesManager from './components/MedicalFacilities/MedicalFacilitiesManager.jsx';
-import AppointmentsManager from './components/Appointments/AppointmentsManager.jsx';
-import DiagnosesManager from './components/Diagnosis/DiagnosesManager.jsx';
-import PrescriptionsManager from './components/Prescriptions/PrescriptionsManager.jsx';
-import DispensingManager from './components/Dispensing/DispensingManager.jsx';
-import PatientsManager from './components/Patients/PatientsManager.jsx';
+// Managers
+import PharmacyManager from './components/Pharmacies/PharmacyManager';
+import PhysiciansManager from './components/physicians/PhysiciansManager';
+import PharmacistsManager from './components/Pharmacists/PharmacistsManager';
+import FacilitiesManager from './components/MedicalFacilities/MedicalFacilitiesManager';
+import AppointmentsManager from './components/Appointments/AppointmentsManager';
+import DiagnosesManager from './components/Diagnosis/DiagnosesManager';
+import PrescriptionsManager from './components/Prescriptions/PrescriptionsManager';
+import DispensingManager from './components/Dispensing/DispensingManager';
+import PatientsManager from './components/Patients/PatientsManager';
+import DashboardRouter from './components/ui/dashboards/DashboardRouter';
+import MedicalRecordsManager from './components/MedicalRecords/MedicalRecordsManager';
 
-function App() {
+
+export default function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Main Dashboard */}
-        <Route
-          path="/"
-          element={
-            <MainLayout title="Dashboard">
-              <Dashboard />
-            </MainLayout>
-          }
-        />
-
-        {/* Existing Pages */}
-        <Route
-          path="/appointments"
-          element={
-            <MainLayout title="Appointments">
-              <Appointments />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/prescriptions"
-          element={
-            <MainLayout title="Prescriptions">
-              <Prescriptions />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/medicalrecords"
-          element={
-            <MainLayout title="Medical Records">
-              <MedicalRecords />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/billing"
-          element={
-            <MainLayout title="Billing">
-              <Billing />
-            </MainLayout>
-          }
-        />
-
-        {/* New Pages */}
-        <Route
-          path="/physicians"
-          element={
-            <MainLayout title="Physicians">
-              <Physicians />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/pharmacists"
-          element={
-            <MainLayout title="Pharmacists">
-              <Pharmacists />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/diagnosis"
-          element={
-            <MainLayout title="Diagnosis">
-              <Diagnosis />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/dispensing"
-          element={
-            <MainLayout title="Dispensing">
-              <Dispensing />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/manage-pharmacies"
-          element={
-            <MainLayout title="Pharmacies">
-              <PharmacyManager />
-            </MainLayout>
-          }
-        />  
-        <Route path="/manage-physicians" element={<MainLayout title="Physicians"><PhysiciansManager /></MainLayout>} />
-<Route path="/manage-pharmacists" element={<MainLayout title="Pharmacists"><PharmacistsManager /></MainLayout>} />
-<Route path="/manage-facilities" element={<MainLayout title="Facilities"><FacilitiesManager /></MainLayout>} />
-<Route path="/manage-appointments" element={<MainLayout title="Appointments"><AppointmentsManager /></MainLayout>} />
-<Route path="/manage-diagnoses" element={<MainLayout title="Diagnoses"><DiagnosesManager /></MainLayout>} />
-<Route path="/manage-prescriptions" element={<MainLayout title="Prescriptions"><PrescriptionsManager /></MainLayout>} />
-<Route path="/manage-dispensing" element={<MainLayout title="Dispensing"><DispensingManager /></MainLayout>} />
-<Route path="/manage-patients" element={<MainLayout title="Patients"><PatientsManager /></MainLayout>} />
-
-            </Routes>
-    </Router>
+    <AuthProvider> {/* ✅ Wrap the whole app here */}
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
-export default App;
+// ✅ Separate Routes into another component to use `useAuth`
+function AppRoutes() {
+  const { user } = useAuth(); // ✅ Now this will work
+
+  return (
+    <Routes>
+      {/* Login when not logged in */}
+      {!user && <Route path="*" element={<Login />} />}
+
+      {/* Protected routes when logged in */}
+      {user && (
+        <Route path="/" element={<MainLayout />}>
+          {/* Dashboard */}
+          <Route index element={<DashboardRouter />} />
+
+          {/* Core Routes */}
+          <Route path="appointments" element={<Appointments />} />
+          <Route path="prescriptions" element={<Prescriptions />} />
+          <Route path="medicalrecords" element={<MedicalRecords />} />
+          <Route path="billing" element={<Billing />} />
+          <Route path="physicians" element={<Physicians />} />
+          <Route path="pharmacists" element={<Pharmacists />} />
+          <Route path="diagnosis" element={<Diagnosis />} />
+          <Route path="dispensing" element={<Dispensing />} />
+
+          {/* Management Routes */}
+          <Route path="manage-pharmacies" element={<PharmacyManager />} />
+          <Route path="manage-physicians" element={<PhysiciansManager />} />
+          <Route path="manage-pharmacists" element={<PharmacistsManager />} />
+          <Route path="manage-facilities" element={<FacilitiesManager />} />
+          <Route path="manage-appointments" element={<AppointmentsManager />} />
+          <Route path="manage-diagnoses" element={<DiagnosesManager />} />
+          <Route path="manage-prescriptions" element={<PrescriptionsManager />} />
+          <Route path="manage-dispensing" element={<DispensingManager />} />
+          <Route path="manage-patients" element={<PatientsManager />} />
+          <Route path="manage-medicalrecords" element={<MedicalRecordsManager />} />
+        </Route>
+      )}
+    </Routes>
+  );
+}

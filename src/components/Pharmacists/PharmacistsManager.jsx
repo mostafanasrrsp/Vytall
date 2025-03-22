@@ -24,7 +24,7 @@ export default function PharmacistManager() {
     e.preventDefault();
 
     const dto = {
-      pharmacistId: editingId, // ✅ Include pharmacistId when updating
+      pharmacistId: editingId || 0, // ✅ Include pharmacistId when updating
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,

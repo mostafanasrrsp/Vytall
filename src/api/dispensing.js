@@ -1,37 +1,74 @@
 // src/api/dispensing.js
 import axios from 'axios';
 
-const API_BASE = "https://localhost:5227/api/dispensings";
+const API_BASE_URL = 'https://localhost:5227/api/dispensings';
 
-// Fetch all dispensings
+// ✅ Helper to get JWT token
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('jwtToken');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+// ✅ Fetch all dispensings (Pharmacists/Admins)
 export const fetchDispensings = async () => {
-  const response = await fetch(API_BASE);
-  if (!response.ok) throw new Error('Failed to fetch dispensings');
-  return response.json();
+  try {
+    const response = await axios.get(API_BASE_URL, { headers: getAuthHeaders() });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch dispensings', error);
+    throw error;
+  }
 };
 
-// Add dispensing
-export const addDispensing = async (dto) => {
-  const response = await fetch(API_BASE, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(dto),
-  });
-  if (!response.ok) throw new Error('Failed to add dispensing');
+// ✅ Fetch single dispensing (Pharmacists/Admins)
+export const fetchDispensingById = async (id) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/${id}`, { headers: getAuthHeaders() });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch dispensing', error);
+    throw error;
+  }
 };
 
-// Update dispensing
-export const updateDispensing = async (id, dto) => {
-  const response = await fetch(`${API_BASE}/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(dto),
-  });
-  if (!response.ok) throw new Error('Failed to update dispensing');
+// ✅ Add new dispensing (Pharmacists/Admins)
+export const addDispensing = async (dispensingData) => {
+  try {
+    const response = await axios.post(API_BASE_URL, dispensingData, {
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to add dispensing', error);
+    throw error;
+  }
 };
 
-// Delete dispensing
+// ✅ Update dispensing (Pharmacists/Admins)
+export const updateDispensing = async (id, dispensingData) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/${id}`, dispensingData, {
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to update dispensing', error);
+    throw error;
+  }
+};
+
+// ❌ Delete dispensing (Admins Only)
 export const deleteDispensing = async (id) => {
-  const response = await fetch(`${API_BASE}/${id}`, { method: 'DELETE' });
-  if (!response.ok) throw new Error('Failed to delete dispensing');
+  try {
+    await axios.delete(`${API_BASE_URL}/${id}`, { headers: getAuthHeaders() });
+  } catch (error) {
+    console.error('Failed to delete dispensing', error);
+    throw error;
+  }
 };

@@ -1,7 +1,16 @@
 // AppointmentCard.jsx
+import { useAuth } from '../../login/AuthContext';
+
 export default function AppointmentCard({ appointment }) {
-    const { appointmentTime, physicianName, reason, status } = appointment;
-  
+    const { user } = useAuth();
+    const { appointmentTime, physicianName, patientName, reason, status } = appointment;
+
+    // Determine label based on role
+    const displayName =
+      user?.role === "Physician"
+        ? `Patient: ${patientName}`
+        : `Dr. ${physicianName}`;
+
     return (
       <div className="p-4 bg-white rounded-lg shadow hover:shadow-md transition duration-200">
         <div className="flex justify-between items-center mb-2">
@@ -20,8 +29,8 @@ export default function AppointmentCard({ appointment }) {
             </span>
           )}
         </div>
-        <p className="text-gray-700 font-medium">Dr. {physicianName}</p>
+        <p className="text-gray-700 font-medium">{displayName}</p>
         <p className="text-gray-600">{reason}</p>
       </div>
     );
-  }
+}

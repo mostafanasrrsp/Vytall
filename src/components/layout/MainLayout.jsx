@@ -1,14 +1,15 @@
-import Sidebar from './sidebar';
+import Sidebar from './Sidebar';
 import Header from './Header';
+import { Outlet } from 'react-router-dom';
 
-export default function MainLayout({ children, title }) {
+export default function MainLayout() {
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <div className="flex-1 flex flex-col ml-64"> {/* ensure sidebar width matches left offset */}
-        <Header title={title} />
-        <main className="flex-1 p-6 bg-gray-100 pt-20 overflow-auto"> {/* pt-16 matches header height */}
-          {children}
+    <div className="flex min-h-screen bg-slate-50"> {/* Light slate background, softer on eyes */}
+      <Sidebar /> {/* Fixed width sidebar */}
+      <div className="flex-1 flex flex-col"> {/* Main content area */}
+        <Header />
+        <main className="flex-1 p-8 pt-24 overflow-auto"> {/* Extra padding, room for content */}
+          <Outlet /> {/* Page content loads here */}
         </main>
       </div>
     </div>

@@ -78,16 +78,22 @@ export default function PatientsManager() {
 
       {/* FORM */}
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-lg w-full">
-        {['firstName', 'lastName', 'email', 'phone'].map((field) => (
-          <input
-            key={field}
-            type="text"
-            placeholder={field}
-            value={formData[field]}
-            onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
-            className="w-full p-2 border rounded"
-            required
-          />
+        {[
+          { key: 'firstName', label: 'First Name' },
+          { key: 'lastName', label: 'Last Name' },
+          { key: 'email', label: 'Email' },
+          { key: 'phone', label: 'Phone' }
+        ].map(({ key, label }) => (
+          <div key={key}>
+            <input
+              type="text"
+              placeholder={label} // Display correct placeholder
+              value={formData[key]}
+              onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
         ))}
         <input
           type="date"

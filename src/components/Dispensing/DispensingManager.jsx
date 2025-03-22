@@ -1,58 +1,68 @@
 import React, { useEffect, useState } from 'react';
-import { fetchDispensings, addDispensing, updateDispensing, deleteDispensing } from '../../api/dispensing';
-import { fetchPrescriptions } from '../../api/prescriptions';
+import {
+  fetchDispensings,
+  addDispensing,
+  updateDispensing,
+  deleteDispensing
+} from '../../api/dispensing';
+import { fetchUndispensedPrescriptions } from '../../api/prescriptions';
+import { fetchPharmacists } from '../../api/pharmacists';
+import { useAuth } from '../../login/AuthContext';
 import Button from '../ui/Button';
+import Select from "react-select";
 
 export default function DispensingManager() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'Admin';
+  const isPharmacist = user?.role === 'Pharmacist';
+
   const [dispensings, setDispensings] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
+  const [pharmacists, setPharmacists] = useState([]);
   const [formData, setFormData] = useState({
     prescriptionId: '',
     quantity: '',
-    dispensingNotes: '' // ✅ Always initialized as string
+    dispensingNotes: '',
+    pharmacistId: isPharmacist ? user.pharmacistId : ''
   });
   const [editingId, setEditingId] = useState(null);
 
-  const pharmacistId = 1; // Static for now
-
-  // Load data on mount
   useEffect(() => {
     loadDispensings();
     loadPrescriptions();
+    if (isAdmin) loadPharmacists();
   }, []);
 
-  // Fetch all dispensings
   const loadDispensings = async () => {
-    try {
-      const data = await fetchDispensings();
-      setDispensings(data);
-    } catch (error) {
-      console.error('Failed to fetch dispensings:', error);
-    }
+    const data = await fetchDispensings();
+    setDispensings(data);
   };
 
-  // Fetch all prescriptions for dropdown
   const loadPrescriptions = async () => {
-    try {
-      const data = await fetchPrescriptions();
-      setPrescriptions(data);
-    } catch (error) {
-      console.error('Failed to fetch prescriptions:', error);
-    }
+    const data = await fetchUndispensedPrescriptions();
+    setPrescriptions(data);
   };
 
-  // Handle Add / Update dispensing
+  const loadPharmacists = async () => {
+    const data = await fetchPharmacists();
+    const options = data.map((p) => ({
+      value: p.id,
+      label: `Pharmacist ${p.name}`
+    }));
+    setPharmacists(options);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const dto = {
-      pharmacistId: pharmacistId,
-      prescriptionId: Number(formData.prescriptionId),
-      quantity: Number(formData.quantity),
-      dispensingNotes: formData.dispensingNotes || '' // ✅ Always send empty string if nothing entered
+      pharmacistId: isPharmacist
+        ? user.pharmacistId
+        : parseInt(formData.pharmacistId),
+      prescriptionId: parseInt(formData.prescriptionId),
+      quantity: parseInt(formData.quantity),
+      dispensingNotes: formData.dispensingNotes || ''
     };
-
-    console.log('Submitting DTO:', dto); // For debugging purpose
 
     try {
       if (editingId) {
@@ -61,85 +71,106 @@ export default function DispensingManager() {
         await addDispensing(dto);
       }
       resetForm();
-      await loadDispensings();
+      loadDispensings();
+      loadPrescriptions();
     } catch (error) {
       console.error('Failed to save dispensing:', error);
     }
   };
 
-  // Handle Edit (prefill form)
   const handleEdit = (dispensing) => {
     setFormData({
-      prescriptionId: dispensing.prescriptionId,
-      quantity: dispensing.quantity !== null ? dispensing.quantity : '', // ✅ Safe fallback
-      dispensingNotes: dispensing.notes || '' // ✅ Always string
+      prescriptionId: String(dispensing.prescriptionId),
+      quantity: dispensing.quantity ?? '',
+      dispensingNotes: dispensing.notes || '',
+      pharmacistId: dispensing.pharmacistId
     });
     setEditingId(dispensing.dispensingId);
   };
 
-  // Handle Delete dispensing (no confirm)
   const handleDelete = async (id) => {
-    try {
-      await deleteDispensing(id); // ✅ No more confirm
-      await loadDispensings();
-    } catch (error) {
-      console.error('Failed to delete dispensing:', error);
-    }
+    await deleteDispensing(id);
+    loadDispensings();
+    loadPrescriptions();
   };
 
-  // Reset form
   const resetForm = () => {
     setFormData({
       prescriptionId: '',
       quantity: '',
-      dispensingNotes: ''
+      dispensingNotes: '',
+      pharmacistId: isPharmacist ? user.pharmacistId : ''
     });
     setEditingId(null);
   };
 
   return (
-    <div className="p-4 w-full flex flex-col gap-6">
+    <div className="p-4 w-full flex flex-col gap-6" style={{ overflow: "visible" }}>
       <h2 className="text-2xl font-bold mb-4">{editingId ? 'Edit Dispensing' : 'Dispense Medication'}</h2>
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-lg w-full">
-        {/* Prescription Dropdown */}
-        <select
-          value={formData.prescriptionId}
-          onChange={(e) => setFormData({ ...formData, prescriptionId: e.target.value })}
-          className="w-full p-2 border rounded"
-          required
-        >
-          <option value="">Select Prescription</option>
-          {prescriptions.map((p) => (
-            <option key={p.prescriptionId} value={p.prescriptionId}>
-              {p.medicationDetails} - {p.patientName}
-            </option>
-          ))}
-        </select>
+        {/* ✅ Prescription dropdown */}
+        <Select
+          options={prescriptions.map((p) => ({
+            value: p.prescriptionId,
+            label: `${p.medicationDetails} - ${p.patientName}`
+          }))}
+          value={
+            prescriptions
+              .map((p) => ({
+                value: String(p.prescriptionId), // ensure string
+                label: `${p.medicationDetails} - ${p.patientName}`
+              }))
+              .find((opt) => String(opt.value) === String(formData.prescriptionId)) || null
+          }
+          onChange={(selected) =>
+            setFormData({ ...formData, prescriptionId: selected?.value || '' })
+          }
+          placeholder="Select Prescription"
+          isSearchable
+          styles={{ control: (base) => ({ ...base, zIndex: 10 }) }}
+        />
 
-        {/* Quantity */}
+        {/* ✅ Pharmacist dropdown only for Admins */}
+        {isAdmin && (
+          <Select
+            options={pharmacists}
+            value={pharmacists.find((opt) => opt.value === formData.pharmacistId) || null}
+            onChange={(selected) =>
+              setFormData({ ...formData, pharmacistId: selected?.value || '' })
+            }
+            placeholder="Select Pharmacist"
+            isSearchable
+            styles={{ control: (base) => ({ ...base, zIndex: 10 }) }}
+          />
+        )}
+
+        {/* ✅ Quantity (only positive numbers) */}
         <input
           type="number"
+          min={1}
           placeholder="Quantity"
           value={formData.quantity}
-          onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, quantity: e.target.value.replace(/[^0-9]/g, '') })
+          }
           className="w-full p-2 border rounded"
           required
         />
 
-        {/* Notes */}
         <textarea
           placeholder="Notes (Optional)"
           value={formData.dispensingNotes}
-          onChange={(e) => setFormData({ ...formData, dispensingNotes: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, dispensingNotes: e.target.value })
+          }
           className="w-full p-2 border rounded"
         />
 
-        {/* Buttons */}
         <Button type="submit" fullWidth>
           {editingId ? 'Update Dispensing' : 'Dispense Medication'}
         </Button>
+
         {editingId && (
           <Button onClick={resetForm} fullWidth variant="secondary">
             Cancel Edit
@@ -147,27 +178,22 @@ export default function DispensingManager() {
         )}
       </form>
 
-      {/* Dispensing List */}
       <div className="space-y-4 w-full">
-        {dispensings.map((dispensing) => (
+        {dispensings.map((d) => (
           <div
-            key={dispensing.dispensingId}
+            key={d.dispensingId}
             className="p-4 border rounded flex justify-between items-start bg-white shadow-md"
           >
             <div className="space-y-1">
-              <p><strong>Medication:</strong> {dispensing.medication}</p>
-              <p><strong>Patient:</strong> {dispensing.patient}</p>
-              <p><strong>Quantity:</strong> {dispensing.quantity}</p>
-              <p><strong>Notes:</strong> {dispensing.notes || 'N/A'}</p>
-              <p><strong>Dispensed On:</strong> {new Date(dispensing.dispensedOn).toLocaleDateString()}</p>
+              <p><strong>Medication:</strong> {d.medication}</p>
+              <p><strong>Patient:</strong> {d.patient}</p>
+              <p><strong>Quantity:</strong> {d.quantity}</p>
+              <p><strong>Notes:</strong> {d.notes || 'N/A'}</p>
+              <p><strong>Dispensed On:</strong> {new Date(d.dispensedOn).toLocaleDateString()}</p>
             </div>
             <div className="flex space-x-2">
-              <Button onClick={() => handleEdit(dispensing)} variant="warning" small>
-                Edit
-              </Button>
-              <Button onClick={() => handleDelete(dispensing.dispensingId)} variant="danger" small>
-                Delete
-              </Button>
+              <Button onClick={() => handleEdit(d)} variant="warning" small>Edit</Button>
+              <Button onClick={() => handleDelete(d.dispensingId)} variant="danger" small>Delete</Button>
             </div>
           </div>
         ))}
