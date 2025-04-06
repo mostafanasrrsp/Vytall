@@ -11,12 +11,13 @@ export default function AppointmentsManager() {
   const { user } = useAuth();
   const isPatient = user?.role === "Patient";
   const isPhysician = user?.role === "Physician";
-  const isAdmin = user?.role === "Admin"; // ✅ Added Admin check
+  const isAdmin = user?.role === "Admin";
+  const isFacility = user?.role === "Facility";
 
   const [appointments, setAppointments] = useState([]);
   const [formData, setFormData] = useState({
     patientId: isPatient ? user.patientId : '', // Auto-fill for patient role
-    physicianId: isPhysician ? user.physicianId : '', // ✅ Auto-assign for physicians
+    physicianId: isPhysician ? user.physicianId : '', // Auto-assign for physicians
     appointmentTime: '',
     status: '',
     reason: '',
@@ -52,11 +53,14 @@ export default function AppointmentsManager() {
     const dto = {
       appointmentId: editingId || 0,
       patientId: isPatient ? user.patientId : Number(formData.patientId),
-      physicianId: isPhysician ? user.physicianId : Number(formData.physicianId), // ✅ Patients/Admins select, Physicians auto-assign
+      physicianId: isPhysician ? user.physicianId : Number(formData.physicianId),
       appointmentTime: formData.appointmentTime,
       status: formData.status,
       reason: formData.reason || null,
+      facilityId: isFacility ? Number(user.facilityId) : null
     };
+
+    console.log("Submitting appointment with data:", dto);
 
     if (editingId) {
       await updateAppointment(editingId, dto);
@@ -108,8 +112,8 @@ export default function AppointmentsManager() {
           />
         )}
 
-        {/* Physician Select (Hidden for Physicians, but visible for Patients & Admins) */}
-        {(isPatient || isAdmin) && (
+        {/* Physician Select (Hidden for Physicians, but visible for Patients, Admins & Facilities) */}
+        {(isPatient || isAdmin || isFacility) && (
           <PhysicianSelect
             value={formData.physicianId}
             onChange={(id) => setFormData({ ...formData, physicianId: id })}

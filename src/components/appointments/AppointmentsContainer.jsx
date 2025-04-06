@@ -34,7 +34,7 @@ export default function AppointmentsContainer() {
     <div className="flex flex-col p-4 bg-white rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Upcoming Appointments</h2>
-        <Link to="/manage-appointments" className="bg-[#609bd8] text-white hover:text-white px-3 py-1 rounded-full hover:bg-[#4e8ac7] transition">
+        <Link to="/manage-appointments" className="bg-[#6aa3db] text-white hover:text-white px-3 py-1 rounded-full hover:bg-[#7fb5e7] transition">
           +
         </Link>
       </div>

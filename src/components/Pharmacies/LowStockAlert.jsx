@@ -11,30 +11,28 @@ export default function LowStockAlerts() {
   ];
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-lg">
-      <h2 className="text-lg font-bold mb-2">Low Stock Alerts</h2>
-      <p className="text-gray-500 text-sm mb-4">
+    <div className="p-4 bg-[#7d9eeb]/25 hover:bg-[#7d9eeb]/30 rounded-lg shadow-lg transition-all duration-200">
+      <h2 className="text-xl font-bold mb-2 text-gray-800">Low Stock Alerts</h2>
+      <p className="text-gray-600 text-sm mb-4">
         The following medications are running low. Consider restocking.
       </p>
 
       <div className="space-y-2">
         {lowStockMedications.map((med, index) => (
-          <div key={index} className="flex justify-between items-center p-2 border rounded-md">
-            <span className="text-gray-800 font-medium">{med.name}</span>
-            <span className="text-[#d9534f] font-bold">Stock: {med.quantity}</span>
+          <div key={index} className="flex justify-between items-center p-2 bg-white/50 rounded-md">
+            <span className="text-gray-700 font-medium">{med.name}</span>
+            <span className="text-red-500 font-bold">Stock: {med.quantity}</span>
           </div>
         ))}
       </div>
 
-      {/* Mock Order More Button */}
-      <div className="mt-4 text-center">
-        <Button
+      <div className="mt-4">
+        <button
           onClick={() => alert('Order request sent! (Mock)')}
-          variant="primary"
-          fullWidth
+          className="w-full py-2 px-4 bg-[#7d9eeb] hover:bg-[#6b8ad8] text-white font-medium rounded-full transition-colors duration-200"
         >
           Order More
-        </Button>
+        </button>
       </div>
     </div>
   );

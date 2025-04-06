@@ -13,16 +13,17 @@ export function AuthProvider({ children }) {
     const patientId = localStorage.getItem('patientId');
     const physicianId = localStorage.getItem('physicianId');
     const pharmacistId = localStorage.getItem('pharmacistId');
+    const facilityId = localStorage.getItem('facilityId');
 
     if (token && role && username) {
-      setUser({ token, role, username, patientId, physicianId, pharmacistId });
+      setUser({ token, role, username, patientId, physicianId, pharmacistId, facilityId });
     }
   }, []);
 
   // ✅ Handle login success and save everything in localStorage
-  function handleLoginSuccess({ token, role, username, patientId, physicianId, pharmacistId }) {
-    console.log("Login Success Data:", { token, role, username, patientId, physicianId, pharmacistId }); // ✅ Check what's returned
-    setUser({ token, role, username, patientId, physicianId, pharmacistId });
+  function handleLoginSuccess({ token, role, username, patientId, physicianId, pharmacistId, facilityId }) {
+    console.log("Login Success Data:", { token, role, username, patientId, physicianId, pharmacistId, facilityId }); // ✅ Check what's returned
+    setUser({ token, role, username, patientId, physicianId, pharmacistId, facilityId });
     
 
     localStorage.setItem('jwtToken', token);
@@ -31,6 +32,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem('patientId', patientId || '');
     localStorage.setItem('physicianId', physicianId || '');
     localStorage.setItem('pharmacistId', pharmacistId || '');
+    localStorage.setItem('facilityId', facilityId || '');
   }
 
   function logout() {
@@ -41,6 +43,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('patientId');
     localStorage.removeItem('physicianId');
     localStorage.removeItem('pharmacistId');
+    localStorage.removeItem('facilityId');
 
     // ✅ Reset user state
     setUser(null);

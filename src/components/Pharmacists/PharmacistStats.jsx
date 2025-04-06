@@ -10,11 +10,22 @@ export default function PharmacistStats() {
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-lg">
-      <h2 className="text-xl font-bold mb-2">Key Statistics</h2>
-      <p className="text-gray-700">Total Dispensings: <span className="font-semibold">{stats.totalDispensings}</span></p>
-      <p className="text-gray-700">Unique Medications: <span className="font-semibold">{stats.uniqueMedications}</span></p>
-      <p className="text-gray-700">Prescriptions Processed: <span className="font-semibold">{stats.prescriptionsProcessed}</span></p>
+    <div className="p-4 bg-[#609bd8]/25 hover:bg-[#609bd8]/30 rounded-lg shadow-lg transition-all duration-200">
+      <h2 className="text-xl font-bold mb-4 text-gray-800">Key Statistics</h2>
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <p className="text-gray-700">Total Dispensings</p>
+          <span className="text-2xl font-bold text-gray-800">{stats.totalDispensings}</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <p className="text-gray-700">Unique Medications</p>
+          <span className="text-2xl font-bold text-gray-800">{stats.uniqueMedications}</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <p className="text-gray-700">Prescriptions Processed</p>
+          <span className="text-2xl font-bold text-gray-800">{stats.prescriptionsProcessed}</span>
+        </div>
+      </div>
     </div>
   );
 }

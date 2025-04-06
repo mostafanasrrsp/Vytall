@@ -1,17 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import AppointmentsContainer from '../../Appointments/AppointmentsContainer';
 import PrescriptionReminder from '../../Prescriptions/PrescriptionReminder';
-import MedicalRecordsSummary from '../../MedicalRecords/MedicalRecordsSummary';
-import BillingSummary from '../../billing/InvoiceCard';
+import MedicalRecordsSummary from '../../medicalRecords/MedicalRecordsSummary';
+import TransactionCard from '../../wallet/TransactionCard';
 import MedicationAdherence from '../../Analytics/MedicationAdherence';
 
 export default function PatientDashboard() {
+  const [adherenceRefreshTrigger, setAdherenceRefreshTrigger] = useState(0);
+
   // For demo, using static stats; these can be replaced with real data later.
   const stats = {
     appointments: 5,
     prescriptions: 3,
     medicalRecords: 12,
-    billingDue: '$150',
+    walletBalance: 150,
+  };
+
+  const handleDoseTaken = () => {
+    setAdherenceRefreshTrigger(prev => prev + 1);
   };
 
   return (
@@ -25,17 +32,27 @@ export default function PatientDashboard() {
           <AppointmentsContainer />
 
           {/* Move Medication Adherence above Medical Records & Billing */}
-          <MedicationAdherence />
+          <MedicationAdherence refreshTrigger={adherenceRefreshTrigger} />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <MedicalRecordsSummary count={stats.medicalRecords} />
-            <BillingSummary amount={stats.billingDue} />
+            <Link to="/wallet" className="block">
+              <TransactionCard 
+                transaction={{
+                  id: 'summary',
+                  date: new Date().toISOString(),
+                  description: 'Current Balance',
+                  amount: stats.walletBalance,
+                  status: 'available'
+                }} 
+              />
+            </Link>
           </div>
         </div>
 
         {/* Prescription Reminder in its own column */}
         <div className='grid grid-cols-1 gap-4'>
-          <PrescriptionReminder />
+          <PrescriptionReminder onDoseTaken={handleDoseTaken} />
         </div>
       </div>
     </div>

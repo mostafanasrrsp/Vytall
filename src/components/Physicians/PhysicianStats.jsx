@@ -40,13 +40,25 @@ export default function PhysicianStats() {
   }
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-lg">
-      <h2 className="text-xl font-bold mb-2">Key Statistics</h2>
-      <div className="flex flex-col space-y-2">
-        <p>Total Appointments: <strong>{stats.totalAppointments}</strong></p>
-        <p>Unique Patients: <strong>{stats.uniquePatients}</strong></p>
-        <p>Completed: <strong>{stats.completedCount}</strong></p>
-        <p>Scheduled: <strong>{stats.scheduledCount}</strong></p>
+    <div className="p-4 bg-[#7d9eeb]/25 hover:bg-[#7d9eeb]/30 rounded-lg shadow-lg transition-all duration-200">
+      <h2 className="text-xl font-bold mb-4 text-gray-800">Key Statistics</h2>
+      <div className="space-y-4">
+        <div className="flex justify-between items-center p-2 bg-white/50 rounded-md">
+          <span className="text-gray-700">Total Appointments</span>
+          <span className="text-xl font-bold text-gray-800">{stats.totalAppointments}</span>
+        </div>
+        <div className="flex justify-between items-center p-2 bg-white/50 rounded-md">
+          <span className="text-gray-700">Unique Patients</span>
+          <span className="text-xl font-bold text-gray-800">{stats.uniquePatients}</span>
+        </div>
+        <div className="flex justify-between items-center p-2 bg-white/50 rounded-md">
+          <span className="text-gray-700">Completed</span>
+          <span className="text-xl font-bold text-gray-800">{stats.completedCount}</span>
+        </div>
+        <div className="flex justify-between items-center p-2 bg-white/50 rounded-md">
+          <span className="text-gray-700">Scheduled</span>
+          <span className="text-xl font-bold text-gray-800">{stats.scheduledCount}</span>
+        </div>
       </div>
     </div>
   );

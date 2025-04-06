@@ -26,18 +26,19 @@ export default function PhysicianPatientList() {
   }, [user.physicianId]);
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-4">Your Patients</h2>
+    <div className="p-4 bg-[#6bb7b7]/25 hover:bg-[#6bb7b7]/30 rounded-lg shadow-lg transition-all duration-200">
+      <h2 className="text-xl font-bold mb-4 text-gray-800">Your Patients</h2>
       {patients.length === 0 ? (
-        <p className="text-gray-500">No patients found.</p>
+        <p className="text-gray-600">No patients found.</p>
       ) : (
-        <ul className="space-y-2">
+        <div className="space-y-2">
           {patients.map(p => (
-            <li key={p.patientId} className="p-2 border rounded hover:bg-gray-100 transition">
-              <span className="font-semibold">{p.patientName}</span> (ID: {p.patientId})
-            </li>
+            <div key={p.patientId} className="flex justify-between items-center p-2 bg-white/50 rounded-md hover:bg-white/70 transition-all duration-200">
+              <span className="text-gray-700 font-medium">{p.patientName}</span>
+              <span className="text-gray-600 text-sm">ID: {p.patientId}</span>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

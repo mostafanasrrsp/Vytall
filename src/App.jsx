@@ -10,7 +10,7 @@ import Login from './login/Login';
 import Appointments from './components/appointments/Appointments';
 import Prescriptions from './components/prescriptions/Prescriptions';
 import MedicalRecords from './components/medicalRecords/MedicalRecords';
-import Billing from './components/billing/Billing';
+import Wallet from './components/wallet/Wallet';
 import Physicians from './components/physicians/physicians';
 import Pharmacists from './components/pharmacists/Pharmacists';
 import Diagnosis from './components/diagnosis/Diagnosis';
@@ -21,13 +21,14 @@ import PharmacyManager from './components/Pharmacies/PharmacyManager';
 import PhysiciansManager from './components/physicians/PhysiciansManager';
 import PharmacistsManager from './components/Pharmacists/PharmacistsManager';
 import FacilitiesManager from './components/MedicalFacilities/MedicalFacilitiesManager';
-import AppointmentsManager from './components/Appointments/AppointmentsManager';
+import AppointmentsManager from './components/appointments/AppointmentsManager';
 import DiagnosesManager from './components/Diagnosis/DiagnosesManager';
 import PrescriptionsManager from './components/Prescriptions/PrescriptionsManager';
 import DispensingManager from './components/Dispensing/DispensingManager';
 import PatientsManager from './components/Patients/PatientsManager';
 import DashboardRouter from './components/ui/dashboards/DashboardRouter';
 import MedicalRecordsManager from './components/MedicalRecords/MedicalRecordsManager';
+import AnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
 
 
 export default function App() {
@@ -59,7 +60,7 @@ function AppRoutes() {
           <Route path="appointments" element={<Appointments />} />
           <Route path="prescriptions" element={<Prescriptions />} />
           <Route path="medicalrecords" element={<MedicalRecords />} />
-          <Route path="billing" element={<Billing />} />
+          <Route path="wallet" element={<Wallet />} />
           <Route path="physicians" element={<Physicians />} />
           <Route path="pharmacists" element={<Pharmacists />} />
           <Route path="diagnosis" element={<Diagnosis />} />
@@ -76,6 +77,7 @@ function AppRoutes() {
           <Route path="manage-dispensing" element={<DispensingManager />} />
           <Route path="manage-patients" element={<PatientsManager />} />
           <Route path="manage-medicalrecords" element={<MedicalRecordsManager />} />
+          <Route path="analytics" element={<AnalyticsDashboard />} />
         </Route>
       )}
     </Routes>
