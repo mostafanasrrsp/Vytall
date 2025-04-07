@@ -1,0 +1,40 @@
+## .NET Core
+bin/
+obj/
+*.dll
+*.pdb
+*.user
+*.userosscache
+*.sln.docstates
+
+## Visual Studio
+.vs/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.iml
+
+## Rider
+.idea/
+
+## User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Logs
+*.log
+
+## Local settings
+appsettings.Development.json
+appsettings.Local.json
+
+## SQLite database files
+*.db
+*.sqlite
+*.sqlite3
+
+## Environment variables
+.env 
