@@ -1,0 +1,19 @@
+{
+  "interactions": [
+    {
+      "drugs": ["Aspirin", "Warfarin"],
+      "severity": "major",
+      "description": "Increased risk of bleeding when Aspirin is taken with Warfarin."
+    },
+    {
+      "drugs": ["Lisinopril", "Potassium"],
+      "severity": "moderate",
+      "description": "Lisinopril can increase potassium levels, risk of hyperkalemia."
+    },
+    {
+      "drugs": ["Metformin", "Cimetidine"],
+      "severity": "minor",
+      "description": "Cimetidine may increase the effects of Metformin. Monitor for hypoglycemia."
+    }
+  ]
+} 
